@@ -17,7 +17,8 @@ type Order struct {
 // GetNewID assigns an ID to the current Order by incrementing the total
 // number of orders created.
 func (o *Order) GetNewID() int {
-	o.ID = totalOrders + 1
+	totalOrders++
+	o.ID = totalOrders
 	return o.ID
 }
 
@@ -36,8 +37,8 @@ func (o *Order) CalculateDiscount() float64 {
 		}
 	}
 
-	totalDiscount += (float64(appleCount) / 2) * 0.60
-	totalDiscount += (float64(orangeCount) / 3) * 0.25
+	totalDiscount += float64(appleCount/2) * 0.60
+	totalDiscount += float64(orangeCount/3) * 0.25
 
 	return totalDiscount * -1
 }
@@ -55,7 +56,7 @@ func (o *Order) CalculateGrossCost() (totalCost float64) {
 	return
 }
 
-func (o *Order) String() string {
-	return fmt.Sprintf("{\nOrder Id: %d\nStatus: %t\nInputs: %x\n}",
+func (o Order) String() string {
+	return fmt.Sprintf("{\nOrder Id: %d\nStatus: %t\nInputs: %v\n}",
 		o.ID, o.Status, o.OrderInput)
 }

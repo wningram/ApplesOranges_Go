@@ -36,7 +36,7 @@ func main() {
 	fmt.Println("App is running!")
 
 	for run {
-		fmt.Println("Input -> ")
+		fmt.Println("\nInput -> ")
 		input, _, err := reader.ReadLine()
 		if err != nil {
 			fmt.Printf("An error has occured: %v\n", err.Error())
@@ -54,14 +54,15 @@ func main() {
 				fmt.Println(o.String())
 			}
 		case "restock apples":
-			count, err := reader.ReadString('\n')
+			count, _, err := reader.ReadLine()
 			if err != nil {
 				fmt.Printf("There was an error parsing input: %v\n", err.Error())
 			}
 			// Convert input to int
-			restockCount, err := strconv.Atoi(count)
+			restockCount, err := strconv.Atoi(string(count))
 			if err != nil {
 				fmt.Printf("The value provided is not a valid number.\n")
+				fmt.Println(count)
 			}
 			processedOrders := notifications.RestockApples(restockCount)
 			for _, o := range processedOrders {
@@ -69,28 +70,33 @@ func main() {
 				fmt.Println(o)
 			}
 		case "restock oranges":
-			count, err := reader.ReadString('\n')
+			count, _, err := reader.ReadLine()
 			if err != nil {
 				fmt.Printf("There was an error parsing input: %v\n", err.Error())
 			}
 			// Convert input to int
-			restockCount, err := strconv.Atoi(count)
+			restockCount, err := strconv.Atoi(string(count))
 			if err != nil {
 				fmt.Println("The value provided is not a valid number.")
+				fmt.Println(count)
 			}
 			processedOrders := notifications.RestockOranges(restockCount)
 			for _, o := range processedOrders {
 				fmt.Printf("Order %d processed.\n", o.ID)
 				fmt.Println(o)
 			}
+		case "stock":
+			notifications.ReportStockCounts()
 		default:
 			orderInput, err := parseInput(string(input))
 			if err != nil {
 				fmt.Println(err.Error())
+				break
 			}
 			newOrder := notifications.RegisterOrder(Order{OrderInput: orderInput})
 			discount := newOrder.CalculateDiscount()
-			cost := newOrder.CalculateGrossCost() + discount
+			grossCost := newOrder.CalculateGrossCost()
+			cost := grossCost + discount
 			err = notifications.ProcessOrder(newOrder.ID)
 			oosErr, ok := err.(ErrOutOfStock)
 			if ok {
@@ -108,6 +114,7 @@ func main() {
 					break
 				}
 				fmt.Printf("Order %d processed.\n", newOrder.ID)
+				fmt.Printf("Gross Cost: %f\n", grossCost)
 				fmt.Printf("Discount %f\n", discount)
 				fmt.Printf("Total Cost is %f\n", cost)
 				fmt.Printf("Estimated Delivery Time %ds (when in stock)\n", deliveryTime)
