@@ -43,12 +43,16 @@ func main() {
 			break
 		}
 
-		fmt.Printf("Input was: %v %T\n", strings.ToLower(string(input)), input)
+		// fmt.Printf("Input was: %v %T\n", strings.ToLower(string(input)), string(input))
 		switch strings.ToLower(string(input)) {
-		case "help\n":
+		case "help":
 			fmt.Println(helpText)
 		case "quit":
 			run = false
+		case "orders":
+			for _, o := range notifications.Orders {
+				fmt.Println(o.String())
+			}
 		case "restock apples":
 			count, err := reader.ReadString('\n')
 			if err != nil {
